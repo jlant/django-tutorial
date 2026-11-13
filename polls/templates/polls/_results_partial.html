@@ -1,0 +1,20 @@
+<div class="card-body p-4" id="poll-container">
+  <h2 class="h5 mb-3">{{ question.question_text }}</h2>
+
+  <ul class="list-group mb-4">
+    {% for choice in question.choice_set.all %}
+      <li class="list-group-item">
+        <div class="d-flex justify-content-between mb-1">
+          <span>{{ choice.choice_text }}</span>
+          <span class="fw-bold">{{ choice.votes }} vote{{ choice.votes|pluralize }}</span>
+        </div>
+        <div class="progress" style="height: 8px;">
+          <div class="progress-bar bg-success" role="progressbar" style="width: {% widthratio choice.votes total_votes 100 %}%"></div>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <a href="{% url 'polls:detail' question.id %}" class="btn btn-outline-primary btn-sm">Vote again?</a>
+  <a href="{% url 'polls:index' %}" class="btn btn-link btn-sm">Back to all polls</a>
+</div>

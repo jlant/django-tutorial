@@ -3,16 +3,24 @@
   "model": "polls.question",
   "pk": 1,
   "fields": {
-    "question_text": "How are you?",
-    "pub_date": "2026-11-04T17:33:10Z"
+    "question_text": "Which internal web tool would be most valuable to our engineering team next?",
+    "pub_date": "2026-11-18T20:37:04.205Z"
   }
 },
 {
   "model": "polls.question",
   "pk": 2,
   "fields": {
-    "question_text": "What is your favorite Python web development framework?",
-    "pub_date": "2026-11-12T18:13:39Z"
+    "question_text": "How do you prefer accessing internal engineering applications?",
+    "pub_date": "2026-11-18T20:37:04.241Z"
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 3,
+  "fields": {
+    "question_text": "What is the best time of day for quick 15-minute engineering syncs?",
+    "pub_date": "2026-11-18T20:37:04.265Z"
   }
 },
 {
@@ -20,8 +28,8 @@
   "pk": 1,
   "fields": {
     "question": 1,
-    "choice_text": "Not much",
-    "votes": 1
+    "choice_text": "Real-time machine uptime and downtime tracker",
+    "votes": 0
   }
 },
 {
@@ -29,8 +37,8 @@
   "pk": 2,
   "fields": {
     "question": 1,
-    "choice_text": "The sky",
-    "votes": 2
+    "choice_text": "Operations metrics dashboard",
+    "votes": 0
   }
 },
 {
@@ -38,26 +46,26 @@
   "pk": 3,
   "fields": {
     "question": 1,
-    "choice_text": "Just hacking again",
-    "votes": 3
+    "choice_text": "Quality and scrap metrics dashboard",
+    "votes": 0
   }
 },
 {
   "model": "polls.choice",
   "pk": 4,
   "fields": {
-    "question": 2,
-    "choice_text": "Django",
-    "votes": 3
+    "question": 1,
+    "choice_text": "Automated spec sheet and BOM lookup portal",
+    "votes": 0
   }
 },
 {
   "model": "polls.choice",
   "pk": 5,
   "fields": {
-    "question": 2,
-    "choice_text": "Flask",
-    "votes": 2
+    "question": 1,
+    "choice_text": "Maintenance work-order & calibration log",
+    "votes": 0
   }
 },
 {
@@ -65,8 +73,71 @@
   "pk": 6,
   "fields": {
     "question": 2,
-    "choice_text": "FastAPI",
-    "votes": 1
+    "choice_text": "In a web browser (no installation needed)",
+    "votes": 0
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 7,
+  "fields": {
+    "question": 2,
+    "choice_text": "Desktop GUI application installed on Windows",
+    "votes": 0
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 8,
+  "fields": {
+    "question": 2,
+    "choice_text": "Excel spreadsheets on a shared network drive",
+    "votes": 0
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 9,
+  "fields": {
+    "question": 2,
+    "choice_text": "Mobile / tablet view on the plant floor",
+    "votes": 0
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 10,
+  "fields": {
+    "question": 3,
+    "choice_text": "8:30 AM (Start of shift)",
+    "votes": 0
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 11,
+  "fields": {
+    "question": 3,
+    "choice_text": "10:30 AM (Mid-morning)",
+    "votes": 0
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 12,
+  "fields": {
+    "question": 3,
+    "choice_text": "1:30 PM (Early afternoon)",
+    "votes": 0
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 13,
+  "fields": {
+    "question": 3,
+    "choice_text": "3:30 PM (End of day wrap-up)",
+    "votes": 0
   }
 }
 ]

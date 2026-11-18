@@ -181,3 +181,12 @@ class QuestionVoteHTMXTests(TestCase):
         response = self.client.post(url, {"choice": choice.id})
 
         self.assertRedirects(response, reverse("polls:results", args=(question.id,)))
+
+
+class RootRedirectTests(TestCase):
+    def test_root_url_redirects_to_polls_index(self):
+        """
+        Visiting the root URL '/' redirects to the polls index page.
+        """
+        response = self.client.get("/")
+        self.assertRedirects(response, reverse("polls:index"))

@@ -1,7 +1,7 @@
 [project]
 name = "django-tutorial"
 version = "0.1.0"
-description = "Add your description here"
+description = "Django polls tutorial extended with HTMX, a DRF API and a Docker + Caddy deployment"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -18,7 +18,15 @@ dev = [
 ]
 
 [tool.pyright]
-plugins = ["django_stubs_plugin.main"]
 venvPath = "."
 venv = ".venv"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+# pycodestyle, pyflakes, isort, bugbear, pyupgrade, Django-specific checks
+select = ["E", "F", "I", "B", "UP", "DJ"]
 

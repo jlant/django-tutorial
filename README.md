@@ -33,8 +33,6 @@ django-tutorial/
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
-├── db.sqlite3
-├── main.py
 ├── manage.py
 ├── mysite/
 │   ├── __init__.py
@@ -89,7 +87,7 @@ django-tutorial/
 ### Prerequisites
 
 - Python 3.13+
-- [`uv`](https://astral.sh) installed
+- [`uv`](https://docs.astral.sh/uv/) installed
 
 ### Installation & Setup
 
@@ -120,11 +118,14 @@ django-tutorial/
    ```
 
 6. **Start the development server:**
+
+   Settings default to production (`DEBUG` off, secret key required), so turn on development mode explicitly:
    ```bash
-   uv run manage.py runserver
+   cp .env.example .env      # then set DJANGO_DEBUG=True
+   uv run --env-file .env manage.py runserver
    ```
 
-Visit **`http://127.0.0`** for the web interface or **`http://127.0.0`** for the browsable REST API.
+Visit **`http://127.0.0.1:8000/polls/`** for the web interface or **`http://127.0.0.1:8000/api/`** for the browsable REST API.
 
 ## Useful Commands
 
@@ -149,4 +150,15 @@ uv run manage.py test -v 2
 | `GET` | `/api/questions/<id>/` | Retrieve a specific question |
 | `GET` | `/api/choices/` | List all choices |
 | `POST` | `/api/choices/<id>/vote/` | Increment the vote count for a specific choice |
+
+Reads and voting are public. Creating, updating and deleting questions or choices requires a logged-in user. `votes` is read-only except through the vote action.
+
+## Deployment
+
+```bash
+cp .env.example .env    # set a real DJANGO_SECRET_KEY and your host name
+docker compose up -d --build
+```
+
+The `web` container applies migrations and seeds demo data on first boot; Caddy proxies to Gunicorn.
 

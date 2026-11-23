@@ -9,3 +9,12 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Django static build output
+staticfiles/
+
+# SQLite database files
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm

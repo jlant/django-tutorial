@@ -14,39 +14,35 @@ import os
 import sys
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = "django-insecure--yc1(ic6jt2u_v+t2-t8z(0gg+#2@m1$lsbpqra-f1h5unzkfh"
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-change-me-in-production",
-)
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in ("true", "1", "yes")
+# Deployment checklist: https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
+# Run `manage.py check --deploy` against production settings before every release.
 
 
-# ALLOWED_HOSTS = []
-ALLOWED_HOSTS = os.environ.get(
-    "DJANGO_ALLOWED_HOSTS",
-    "localhost,127.0.0.1",
-).split(",")
+def env_list(name: str, default: str) -> list[str]:
+    """Read a comma-separated environment variable into a list, ignoring blanks."""
+    return [item.strip() for item in os.environ.get(name, default).split(",") if item.strip()]
 
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.environ.get(
-        "DJANGO_CSRF_TRUSTED_ORIGINS",
-        "http://localhost,http://127.0.0.1",
-    ).split(",")
-    if origin.strip()
-]
+
+TESTING = "test" in sys.argv or "PYTEST_VERSION" in os.environ
+
+# Fail closed: production is the default, development must be asked for explicitly.
+DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in ("true", "1", "yes")
+
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
+if not SECRET_KEY:
+    if DEBUG or TESTING:
+        SECRET_KEY = "django-insecure-dev-only-key"
+    else:
+        raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is off.")
+
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
+CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", "http://localhost,http://127.0.0.1")
 
 # Application definition
 
@@ -97,13 +93,6 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 DB_DIR = Path(os.environ.get("DJANGO_DB_DIR", BASE_DIR))
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
 
 DATABASES = {
     "default": {
@@ -169,13 +158,20 @@ MAILERS = {
 }
 
 
+# Django REST Framework
+# Reads are public; writes need a logged-in user (per-view overrides below).
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ],
+}
+
+
 # Debug Toolbar
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-
-TESTING = "test" in sys.argv or "PYTEST_VERSION" in os.environ
 
 if DEBUG and not TESTING:
     INSTALLED_APPS = [

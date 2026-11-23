@@ -2,24 +2,13 @@ from rest_framework import serializers
 
 from polls.models import Choice, Question
 
-"""
-class QuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Question
-        fields = ("id", "question_text", "pub_date", "was_published_recently")
-
 
 class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Choice
         fields = ("id", "question", "choice_text", "votes")
-"""
-
-
-class ChoiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Choice
-        fields = ("id", "question", "choice_text", "votes")
+        # Votes only change through the vote action, never by a direct write.
+        read_only_fields = ("votes",)
 
 
 class QuestionSerializer(serializers.ModelSerializer):

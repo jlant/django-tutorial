@@ -1,16 +1,16 @@
 #!/bin/sh
-
 # -----------------------------------------------
-# Script for Docker container to automatically run migrations, seed initial data if the
-# database is empty, and start Gunicorn.
+# Container start-up: apply migrations, seed demo data on first boot, start Gunicorn.
 # -----------------------------------------------
-set -e
+set -eu
 
-mkdir -p /app/data
-uv run manage.py migrate --noinput
+python manage.py migrate --noinput
 
-# Load initial fixture only on first boot when no questions exist
-uv run manage.py shell -c "from polls.models import Question; import sys; sys.exit(0 if Question.objects.exists() else 1)" || uv run manage.py loaddata polls_seed.json
+# Load the demo fixture only on first boot, when no questions exist
+python manage.py shell -c "from polls.models import Question; import sys; sys.exit(0 if Question.objects.exists() else 1)" \
+    || python manage.py loaddata polls_seed.json
 
-exec uv run gunicorn mysite.wsgi:application --bind 0.0.0.0:8000 --workers 3
-
+exec gunicorn mysite.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --workers "${GUNICORN_WORKERS:-3}" \
+    --access-logfile -

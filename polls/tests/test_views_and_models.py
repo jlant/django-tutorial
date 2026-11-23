@@ -183,6 +183,50 @@ class QuestionVoteHTMXTests(TestCase):
         self.assertRedirects(response, reverse("polls:results", args=(question.id,)))
 
 
+class QuestionResultsViewTests(TestCase):
+    def test_future_question_results_returns_404(self):
+        """
+        Results for an unpublished question are not visible.
+        """
+        future_question = create_question(question_text="Future question.", days=5)
+        url = reverse("polls:results", args=(future_question.id,))
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+
+class QuestionVoteValidationTests(TestCase):
+    def test_get_is_not_allowed(self):
+        """
+        Voting only accepts POST.
+        """
+        question = create_question(question_text="Favorite color?", days=-1)
+        response = self.client.get(reverse("polls:vote", args=(question.id,)))
+        self.assertEqual(response.status_code, 405)
+
+    def test_non_integer_choice_shows_error_instead_of_crashing(self):
+        """
+        A tampered choice value is treated like a missing choice.
+        """
+        question = create_question(question_text="Favorite color?", days=-1)
+        response = self.client.post(
+            reverse("polls:vote", args=(question.id,)), {"choice": "abc"}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "You didn&#x27;t select a choice.")
+
+    def test_vote_on_future_question_returns_404(self):
+        """
+        Unpublished questions cannot be voted on.
+        """
+        question = create_question(question_text="Future question.", days=5)
+        choice = question.choice_set.create(choice_text="Blue", votes=0)
+        response = self.client.post(
+            reverse("polls:vote", args=(question.id,)), {"choice": choice.id}
+        )
+        self.assertEqual(response.status_code, 404)
+        choice.refresh_from_db()
+        self.assertEqual(choice.votes, 0)
+
+
 class RootRedirectTests(TestCase):
     def test_root_url_redirects_to_polls_index(self):
         """

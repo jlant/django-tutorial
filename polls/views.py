@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views import generic
+from django.views.decorators.http import require_POST
 
 from .models import Choice, Question
 
@@ -37,6 +38,12 @@ class ResultsView(generic.DetailView):
     model = Question
     template_name = "polls/results.html"
 
+    def get_queryset(self):
+        """
+        Excludes any questions that aren't published yet.
+        """
+        return Question.objects.filter(pub_date__lte=timezone.now())
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         total = self.object.choice_set.aggregate(total=Sum("votes"))["total"] or 0
@@ -44,11 +51,14 @@ class ResultsView(generic.DetailView):
         return context
 
 
+@require_POST
 def vote(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
+    question = get_object_or_404(
+        Question, pk=question_id, pub_date__lte=timezone.now()
+    )
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
-    except (KeyError, Choice.DoesNotExist):
+    except (KeyError, ValueError, Choice.DoesNotExist):
         context = {
             "question": question,
             "error_message": "You didn't select a choice.",
@@ -58,7 +68,7 @@ def vote(request, question_id):
         return render(request, "polls/detail.html", context)
     else:
         selected_choice.votes = F("votes") + 1
-        selected_choice.save()
+        selected_choice.save(update_fields=["votes"])
 
         if request.headers.get("HX-Request"):
             total = question.choice_set.aggregate(total=Sum("votes"))["total"] or 0

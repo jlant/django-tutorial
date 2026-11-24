@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      DJANGO_DB_DIR: /app/data  # container path; local runs use the project folder
     expose:
       - "8000"
     volumes:

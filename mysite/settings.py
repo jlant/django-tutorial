@@ -149,14 +149,22 @@ STORAGES = {
 }
 
 # Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
-
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
-    },
-}
-
+# https://docs.djangoproject.com/en/6.1/topics/email/
+if DEBUG:
+    # Development: print emails to the terminal instead of sending them
+    MAILERS = {
+        "default": {"BACKEND": "django.core.mail.backends.console.EmailBackend"},
+    }
+else:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "OPTIONS": {
+                "host": os.environ.get("DJANGO_EMAIL_HOST", "localhost"),
+                "port": int(os.environ.get("DJANGO_EMAIL_PORT", "25")),
+            },
+        },
+    }
 
 # Django REST Framework
 # Reads are public; writes need a logged-in user (per-view overrides below).

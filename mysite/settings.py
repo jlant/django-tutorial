@@ -44,6 +44,25 @@ if not SECRET_KEY:
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", "http://localhost,http://127.0.0.1")
 
+# HTTPS: off until IT issues a certificate for the server (see the README).
+# Turn on only when Caddy serves HTTPS; these settings break plain-HTTP logins.
+HTTPS = os.environ.get("DJANGO_HTTPS", "False").lower() in ("true", "1", "yes")
+
+if HTTPS:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 3600  # start small; raise once HTTPS is proven stable
+else:
+    # Accepted risk on the internal network until a certificate is available.
+    SILENCED_SYSTEM_CHECKS = [
+        "security.W004",
+        "security.W008",
+        "security.W012",
+        "security.W016",
+    ]
+
 # Application definition
 
 INSTALLED_APPS = [
